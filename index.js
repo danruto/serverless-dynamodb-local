@@ -89,6 +89,9 @@ class ServerlessDynamodbLocal {
                             }
                         }
                     },
+		    stop: {
+			lifecycleEvents: ['stopHandler']    
+		    },
                     remove: {
                         lifecycleEvents: ['removeHandler']
                     },
@@ -226,6 +229,16 @@ class ServerlessDynamodbLocal {
                 resolve();
             }
         });
+    }
+	
+    stopHandler() {
+	    let self = this;
+	    return new BbPromise(function(resolve) {
+		    let config = self.service.custom.dynamodb || {},
+                port = config.start && config.start.port || 8000
+		    dynamodbLocal.stop(port);
+		    resolve();
+	    });
     }
 }
 module.exports = ServerlessDynamodbLocal;
