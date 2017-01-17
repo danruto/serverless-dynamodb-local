@@ -122,6 +122,7 @@ class ServerlessDynamodbLocal {
             'dynamodb:remove:removeHandler': this.removeHandler.bind(this),
             'dynamodb:install:installHandler': this.installHandler.bind(this),
             'dynamodb:start:startHandler': this.startHandler.bind(this),
+	    'before:offline:start': this.startHandler.bind(this),
             'dynamodb:stop:stopHandler': this.stopHandler.bind(this),
         };
     }
@@ -148,7 +149,9 @@ class ServerlessDynamodbLocal {
 			}else{
 				dynamoOptions = {
                     endpoint: 'http://localhost:' + port,
-                    region: 'localhost'
+                    region: 'localhost',
+			accessKeyId: 'MOCK_ACCESS_KEY_ID',
+			secretAccessKey: 'MOCK_SECRET_ACCESS_KEY'
                 };
 			}		
 			return {
