@@ -89,6 +89,15 @@ class ServerlessDynamodbLocal {
                             }
                         }
                     },
+                    stop: {
+                        lifecycleEvents: ['stopHandler'],
+                        options: {
+                            port: {
+                                shortcut: 'p',
+                                usage: 'The port number that DynamoDB will use to communicate with your application. If you do not specify this option, the default port is 8000'
+                            }
+                        }
+                    },
                     remove: {
                         lifecycleEvents: ['removeHandler']
                     },
@@ -113,7 +122,7 @@ class ServerlessDynamodbLocal {
             'dynamodb:remove:removeHandler': this.removeHandler.bind(this),
             'dynamodb:install:installHandler': this.installHandler.bind(this),
             'dynamodb:start:startHandler': this.startHandler.bind(this),
-            'before:offline:start': this.startHandler.bind(this),
+            'dynamodb:stop:stopHandler': this.stopHandler.bind(this),
         };
     }
     createHandler() {
@@ -138,10 +147,8 @@ class ServerlessDynamodbLocal {
                 });
 			}else{
 				dynamoOptions = {
-			endpoint: 'http://localhost:' + port,
-			region: 'localhost',
-			accessKeyId: 'MOCK_ACCESS_KEY_ID',
-			secretAccessKey: 'MOCK_SECRET_ACCESS_KEY'
+                    endpoint: 'http://localhost:' + port,
+                    region: 'localhost'
                 };
 			}		
 			return {
@@ -225,6 +232,18 @@ class ServerlessDynamodbLocal {
                 console.log("");
                 resolve();
             }
+        });
+    }
+
+    stopHandler() {
+        let self = this,
+            options = this.options;
+        return new BbPromise(function(resolve) {
+            let config = self.service.custom.dynamodb,
+                port = config.start && config.start.port || 8000;
+
+            dynamodbLocal.stop(port);
+            resolve();
         });
     }
 }
